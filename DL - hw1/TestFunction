@@ -1,0 +1,42 @@
+--local M = {}
+
+require 'nn'
+require 'cunn'
+require 'image'
+require 'optim'
+
+function TestFunction (model)
+
+    local mnist = require 'mnist';
+
+    local trainData = mnist.traindataset().data:float();
+    local trainLabels = mnist.traindataset().label:add(1);
+    testData = mnist.testdataset().data:float();
+    testLabels = mnist.testdataset().label:add(1);
+
+
+    --We'll start by normalizing our data
+    local mean = trainData:mean()
+    local std = trainData:std()
+    testData:add(-mean):div(std);
+
+    
+    m = torch.load(model)
+
+    local conf = optim.ConfusionMatrix(torch.range(0,9):totable())
+    local x = testData:narrow(1,1,testData:size(1)):cuda()
+    
+    testData = testData:cuda()
+    testLabels = testLabels:cuda()
+    local y = m:forward(testData)
+    conf:batchAdd(y, testLabels)
+
+    conf:updateValids()
+        local err = 1 - conf.totalValid
+        return err
+end
+
+r = TestFunction('model.t7')
+print (r)
+
+--return M
