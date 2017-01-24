@@ -1,0 +1,7 @@
+This code is able to reproduce a LSTM model for PTB data.
+
+In order to run this code, please:
+
+1. git clone: https://github.com/eladhoffer/recurrent.torch
+2. git clone: https://github.com/eladhoffer/eladtools
+3. cmd: "luarocks make eladtools"
